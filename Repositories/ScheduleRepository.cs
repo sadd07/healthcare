@@ -54,6 +54,15 @@ public class ScheduleRepository : IScheduleRepository
             },
             new()
             {
+                DoctorId = 2,
+                DayId = 1,
+                From = TimeOnly.Parse("17:00"),
+                To = TimeOnly.Parse("20:00"),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
                 DoctorId = 1,
                 DayId = 2,
                 From = TimeOnly.Parse("15:00"),

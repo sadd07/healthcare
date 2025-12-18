@@ -27,6 +27,22 @@ public class AppointmentRepository : IAppointmentRepository
             Duration = p.Duration,
         }).ToListAsync();
     }
+    
+    public async Task<AppointmentDto?> GetById(int id)
+    {
+        var appointment = await _context.Appointments.FirstOrDefaultAsync(p => p.Id == id);
+        if (appointment == null) return null;
+
+        return new AppointmentDto
+        {
+            Id = appointment.Id,
+            PatientId = appointment.PatientId,
+            ScheduleId = appointment.ScheduleId,
+            Day = (Days)appointment.Day,
+            Start = appointment.Start,
+            Duration = appointment.Duration,
+        };
+    }
 
     public async Task<IEnumerable<AppointmentDto>> GetByScheduleId(int scheduleId)
     {

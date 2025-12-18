@@ -94,7 +94,24 @@ public class AppointmentService : IAppointmentService
 
     public async Task<bool> DeleteAppointment(int id)
     {
+        var today = DateTime.Now;
+        var dayId = GetDay(today.DayOfWeek);
+        
         var res = await _appointment.Delete(id);   
         return res;
+    }
+
+    protected Days GetDay(DayOfWeek day)
+    {
+        return day switch
+        {
+            DayOfWeek.Sunday => Days.Sunday,
+            DayOfWeek.Monday => Days.Monday,
+            DayOfWeek.Tuesday => Days.Tuesday,
+            DayOfWeek.Wednesday => Days.Wednesday,
+            DayOfWeek.Thursday => Days.Thursday,
+            DayOfWeek.Friday => Days.Friday,
+            DayOfWeek.Saturday => Days.Saturday,
+        };
     }
 }

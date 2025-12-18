@@ -1,3 +1,4 @@
+using System.Globalization;
 using Healthcare;
 using Healthcare.Exceptions;
 using Healthcare.Interfaces.Repositories;
@@ -5,6 +6,7 @@ using Healthcare.Interfaces.Services;
 using Healthcare.Repositories;
 using Healthcare.Services;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +27,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         sqlServerOptions.CommandTimeout(builder.Configuration.GetValue<int>("Database:CommandTimeout", 30));
     })
 );
+
+// Set timezone
+var jakartaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("id-ID");
+    options.SupportedCultures = new List<CultureInfo> { new CultureInfo("id-ID") };
+    options.SupportedUICultures = new List<CultureInfo> { new CultureInfo("id-ID") };
+});
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -103,6 +116,12 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+app.Use(async (context, next) =>
+{
+    // Set timezone ke Jakarta untuk current request
+    context.Items["JakartaTimeZone"] = jakartaTimeZone;
+    await next();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
