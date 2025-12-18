@@ -33,10 +33,13 @@ builder.Services.AddOpenApi();
 
 // Dependency Injection for Services
 builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 // Dependency Injection for Repositories
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -82,8 +85,10 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         
         var (statusCode, code) = exception switch
         {
+            Created => (201, 0),
             BadRequestException => (400, 1),
             NotFoundException => (404, 2),
+            ConflictException => (409, 10),
             _ => (500, 99)
         };
 

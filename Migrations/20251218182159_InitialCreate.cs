@@ -12,6 +12,25 @@ namespace Healthcare.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "appointments",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: false),
+                    Day = table.Column<int>(type: "int", nullable: false),
+                    Start = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_appointments", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "doctors",
                 columns: table => new
                 {
@@ -27,6 +46,21 @@ namespace Healthcare.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "patients",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_patients", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "schedules",
                 columns: table => new
                 {
@@ -36,7 +70,7 @@ namespace Healthcare.Migrations
                     DayId = table.Column<int>(type: "int", nullable: false),
                     From = table.Column<TimeOnly>(type: "time", nullable: false),
                     To = table.Column<TimeOnly>(type: "time", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -59,6 +93,12 @@ namespace Healthcare.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "appointments");
+
+            migrationBuilder.DropTable(
+                name: "patients");
+
             migrationBuilder.DropTable(
                 name: "schedules");
 

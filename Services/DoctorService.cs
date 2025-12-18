@@ -2,6 +2,7 @@ using Healthcare.Dto;
 using Healthcare.Enums;
 using Healthcare.Interfaces.Repositories;
 using Healthcare.Interfaces.Services;
+using Healthcare.Models;
 
 namespace Healthcare.Services;
 
@@ -9,10 +10,21 @@ public class DoctorService : IDoctorService
 {
     private readonly Days _dayOfWeek;
     private readonly IDoctorRepository _doctor;
+    private readonly IScheduleRepository _schedule;
+    private readonly IPatientRepository _patient;
+    private readonly IAppointmentRepository _appointment;
 
-    public DoctorService(IDoctorRepository doctor)
+    public DoctorService(
+        IDoctorRepository doctor,
+        IScheduleRepository schedule,
+        IPatientRepository patient,
+        IAppointmentRepository appointment
+    )
     {
         _doctor = doctor;
+        _schedule = schedule;
+        _patient = patient;
+        _appointment = appointment;
     }
     
     public async Task<IEnumerable<DoctorDto>> GetAllDoctors()
@@ -64,7 +76,6 @@ public class DoctorService : IDoctorService
             TimeOnly _start = TimeOnly.Parse(schedule.From);
             TimeOnly _end = TimeOnly.Parse(schedule.To);
 
-
             TimeOnly _time = _start;
             do
             {
@@ -73,13 +84,6 @@ public class DoctorService : IDoctorService
                 Console.WriteLine(_time);
             } while (_time <= _end);
         }
-
-
-        // foreach ((int index, string city) in cities.Index()) // Use of the new Index() method
-        // {
-        //     Console.WriteLine($"Index: {index}, City: {city}");
-        // }
-
         
         return new DoctorScheduleSlotDto
         {
@@ -89,7 +93,20 @@ public class DoctorService : IDoctorService
         };
     }
 
-protected string GetDayName(int id)
+    public async Task<(
+        IEnumerable<DoctorDto>, 
+        IEnumerable<ScheduleDto>,
+        IEnumerable<PatientDto>
+    )> Seeds()
+    {
+        var doctors = await _doctor.CreateBatch();
+        var schedules = await _schedule.CreateBatch();
+        var patients = await _patient.CreateBatch();
+
+        return (doctors, schedules, patients);
+    }
+
+    protected string GetDayName(int id)
     {
         return id switch
         {

@@ -21,7 +21,7 @@ public class GetAvailableDoctorRequest
     public string To { get; set; } = string.Empty;
 
     [RegularExpression(@"^(15|30|60)$", 
-        ErrorMessage = "Day must be 15, 30, or 60)")]
+        ErrorMessage = "Slot must be 15, 30, or 60)")]
     public int Slot { get; set; } = 30;
 
     [JsonIgnore]
@@ -43,7 +43,7 @@ public class GetAvailableDoctorRequest
         get
         {
             if (string.IsNullOrEmpty(From))
-                return default; // atau throw exception
+                return default;
                 
             return TimeOnly.ParseExact(From, "HH:mm");
         }
@@ -64,7 +64,6 @@ public class GetAvailableDoctorRequest
     public static ValidationResult ValidateTimeRange(string to, ValidationContext context)
     {
         var instance = (GetAvailableDoctorRequest)context.ObjectInstance;
-        // Gunakan format yang benar
         string[] allowedFormats = { "HH:mm", "h:mm tt", "h:mm", "H:mm" };
         
         if (!TimeOnly.TryParseExact(instance.From, allowedFormats, out var start) ||

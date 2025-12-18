@@ -12,6 +12,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Doctor> Doctors => Set<Doctor>();
     public DbSet<Schedule> Schedules => Set<Schedule>();
+    public DbSet<Patient> Patients => Set<Patient>();
+    public DbSet<Appointment> Appointments => Set<Appointment>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +47,40 @@ public class AppDbContext : DbContext
                 entity.Property(e => e.From)
                     .IsRequired();
                 entity.Property(e => e.To)
+                    .IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()");
+            }
+        );
+
+        modelBuilder.Entity<Patient>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn();
+                entity.Property(e => e.Name)
+                    .IsRequired();
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()");
+            }
+        );
+
+        modelBuilder.Entity<Appointment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn();
+                entity.Property(e => e.PatientId)
+                    .IsRequired();
+                entity.Property(e => e.Day)
+                    .IsRequired();
+                entity.Property(e => e.ScheduleId)
+                    .IsRequired();
+                entity.Property(e => e.Start)
+                    .IsRequired();
+                entity.Property(e => e.Duration)
                     .IsRequired();
                 entity.Property(e => e.CreatedAt)
                     .HasDefaultValueSql("GETDATE()");

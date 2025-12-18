@@ -1,5 +1,4 @@
 using Healthcare.Enums;
-using Healthcare.Models;
 
 namespace Healthcare.Dto;
 

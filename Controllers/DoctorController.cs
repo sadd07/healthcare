@@ -1,6 +1,5 @@
 using Healthcare.Dto;
 using Healthcare.Exceptions;
-using Healthcare.Interfaces.Repositories;
 using Healthcare.Interfaces.Services;
 using Healthcare.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -11,15 +10,15 @@ namespace Healthcare.Controllers;
 public class DoctorController : Controller
 {
     private readonly IDoctorService _doctor;
-    private readonly IScheduleRepository _schedule;
+    private readonly IAppointmentService _appointment;
 
     public DoctorController(
         IDoctorService doctor,
-        IScheduleRepository schedule
+        IAppointmentService appointment
     )
     {
         _doctor = doctor;
-        _schedule = schedule;
+        _appointment = appointment;
     }
 
     // Get: /doctors
@@ -28,6 +27,22 @@ public class DoctorController : Controller
     {
         var doctors = await _doctor.GetAllDoctors();
         return ApiResponse("Success", doctors);
+    }
+
+    // Get: /patients
+    [HttpGet("patients")]
+    public async Task<IActionResult> GetAllPatients()
+    {
+        var patients = await _appointment.GetAllPatients();
+        return ApiResponse("Success", patients);
+    }
+
+    // Get: /appointments
+    [HttpGet("appointments")]
+    public async Task<IActionResult> GetAllAppointments()
+    {
+        var appointments = await _appointment.GetAllAppointments();
+        return ApiResponse("Success", appointments);
     }
 
     // Get: /doctors/{id}/availability
@@ -59,14 +74,42 @@ public class DoctorController : Controller
         return ApiResponse("Success", doctor);
     }
 
-    // Get: /migrate
-    [HttpGet("migrate")]
-    public async Task<IActionResult> Migrate()
+    // Post: /appointments
+    [HttpPost("appointments")]
+    public async Task<IActionResult> CreateAppointment(CreateAppointmentRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        var result = await _appointment.CreateAppointment(new CreateAppointmentDto
+        {
+            DoctorId = request.DoctorId,
+            PatientId = request.PatientId,
+            Day = request.DayOfWeek,
+            Start = request.StartTime,
+            Duration = request.Duration,
+        });
+        if (result.Code != 0)
+        {
+            if (result.Code == 1) throw new BadRequestException(result.Message);
+            throw new ConflictException(result.Message);
+        }
+        
+        throw new  Created(result.Message);
+    }
 
-        // var doctors = await _doctor.CreateBatch();
-        var schedules = await _schedule.CreateBatch();
-        return ApiResponse("Migration successfully.", schedules);
+    // Delete: /appointments/{id}
+    [HttpDelete("appointments/{id}")]
+    public async Task<IActionResult> DeleteAppointment(int id)
+    {
+        var result = await _appointment.DeleteAppointment(id);
+        if (!result) throw new BadHttpRequestException("Delete appointment failed.");
+
+        return ApiResponse("Delete appointment successfully.");
+    }
+
+    // Post: /seeds
+    [HttpPost("seeds")]
+    public async Task<IActionResult> Seeds()
+    {
+        var result = await _doctor.Seeds();
+        return ApiResponse("Seeding data successfully.", result);
     }
 }
