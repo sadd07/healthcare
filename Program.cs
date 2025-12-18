@@ -1,8 +1,11 @@
 using Healthcare;
 using Healthcare.Exceptions;
 using Healthcare.Interfaces.Repositories;
+using Healthcare.Interfaces.Services;
 using Healthcare.Repositories;
+using Healthcare.Services;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,23 +26,43 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     })
 );
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-using var scope = serviceProvider.CreateScope();
-
-var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var provider = dbContext.Database.ProviderName;
-    
-    Console.WriteLine($"Database Provider: {provider}");
-
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Dependency Injection for Services
+builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 // Dependency Injection for Repositories
-builder.Services.AddSingleton<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false;
+    
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value.Errors.First().ErrorMessage
+                );
+        
+        var response = new
+        {
+            code = 1,
+            message = errors.FirstOrDefault().Value ?? "Bad request.",
+        };
+
+        return new BadRequestObjectResult(response)
+        {
+            ContentTypes = { "application/json" }
+        };
+    };
+});
 
 var app = builder.Build();
 
@@ -89,3 +112,18 @@ app.UseRateLimiting();
 app.MapControllers();
 
 app.Run();
+
+static string? ToCamelCase(string? key)
+{
+    if (string.IsNullOrEmpty(key)) return key;
+    
+    // Handle nested properties (e.g., "request.Name" -> "request.name")
+    if (key.Contains('.'))
+    {
+        var parts = key.Split('.');
+        return string.Join(".", parts.Select(p => 
+            char.ToLowerInvariant(p[0]) + p.Substring(1)));
+    }
+    
+    return char.ToLowerInvariant(key[0]) + key.Substring(1);
+}

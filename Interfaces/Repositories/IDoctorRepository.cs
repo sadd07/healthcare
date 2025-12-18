@@ -6,5 +6,7 @@ public interface IDoctorRepository
 {
     Task<IEnumerable<DoctorDto>> GetAll();
     Task<DoctorDto?> GetById(int id);
+    Task<DoctorScheduleDto?> GetSchedulesByDoctorId(int id);
+
     Task<IEnumerable<DoctorDto>> CreateBatch();
 }

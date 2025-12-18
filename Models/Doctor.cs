@@ -9,4 +9,6 @@ public class Doctor : Model
     [Required]
     [StringLength(200)]
     public required string Name { get; set; }
+
+    public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 }
