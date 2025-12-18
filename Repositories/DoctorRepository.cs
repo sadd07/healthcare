@@ -7,6 +7,7 @@ namespace Healthcare.Repositories;
 public class DoctorRepository : IDoctorRepository
 {
     private readonly List<Doctor> models = new();
+
     public async Task<IEnumerable<DoctorDto>> GetAll()
     {
         return models.Select(p => new DoctorDto
@@ -27,5 +28,55 @@ public class DoctorRepository : IDoctorRepository
             Id = doctor.Id,
             Name = doctor.Name, 
         };
+    }
+
+    public async Task<IEnumerable<DoctorDto>> CreateBatch()
+    {
+        var doctors = new List<Doctor>
+        {
+            new()
+            {
+                Id = 1, 
+                Name = "Dr. Alfabet",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Dr. Sarah Quinn",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = 3,
+                Name = "Dr. Michael Jordan",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = 4,
+                Name = "Dr. Kevin McCalister",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = 5,
+                Name = "Dr. Medusa",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            }
+        };
+
+        models.AddRange(doctors);
+        
+        return doctors.Select(d => new DoctorDto
+        {
+            Id = d.Id,
+            Name = d.Name
+        });
     }
 }

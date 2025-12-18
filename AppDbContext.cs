@@ -20,6 +20,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Doctor>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd()
+                    .UseIdentityColumn();
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(200);

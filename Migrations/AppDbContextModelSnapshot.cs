@@ -47,43 +47,6 @@ namespace Healthcare.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("doctors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6138),
-                            Name = "Dr. Alfabet",
-                            UpdatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6266)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6523),
-                            Name = "Dr. Sarah Quinn",
-                            UpdatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6524)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6525),
-                            Name = "Dr. Michael Jordan",
-                            UpdatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6525)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6526),
-                            Name = "Dr. Kevin McCalister",
-                            UpdatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6526)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6527),
-                            Name = "Dr. Medusa",
-                            UpdatedAt = new DateTime(2025, 12, 17, 9, 40, 2, 172, DateTimeKind.Utc).AddTicks(6528)
-                        });
                 });
 #pragma warning restore 612, 618
         }

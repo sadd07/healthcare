@@ -10,6 +10,7 @@ var configuration = builder.Configuration;
 
 var connectionString = configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Database connection string is not configured.");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString, sqlServerOptions =>
     {
@@ -21,6 +22,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         sqlServerOptions.CommandTimeout(builder.Configuration.GetValue<int>("Database:CommandTimeout", 30));
     })
 );
+
+var serviceProvider = builder.Services.BuildServiceProvider();
+using var scope = serviceProvider.CreateScope();
+
+var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var provider = dbContext.Database.ProviderName;
+    
+    Console.WriteLine($"Database Provider: {provider}");
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -50,8 +59,8 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         
         var (statusCode, code) = exception switch
         {
+            BadRequestException => (400, 1),
             NotFoundException => (404, 2),
-            UnauthorizedAccessException => (401, 4),
             _ => (500, 99)
         };
 
