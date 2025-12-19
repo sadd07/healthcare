@@ -1,5 +1,6 @@
 using Healthcare.Dto;
 using Healthcare.Enums;
+using Healthcare.Exceptions;
 using Healthcare.Interfaces.Repositories;
 using Healthcare.Interfaces.Services;
 using Healthcare.Models;
@@ -94,11 +95,24 @@ public class AppointmentService : IAppointmentService
 
     public async Task<bool> DeleteAppointment(int id)
     {
+        var appointment = await _appointment.GetById(id);
+        if (appointment == null) throw new BadRequestException("Appointment data not found.");
+
         var today = DateTime.Now;
         var dayId = GetDay(today.DayOfWeek);
-        
-        var res = await _appointment.Delete(id);   
-        return res;
+        if (dayId == appointment.Day)
+        {
+            TimeOnly time = TimeOnly.FromDateTime(today);
+            time = time.AddHours(2);
+
+            if (time >= appointment.Start)
+            {
+                throw new ConflictException("Cancellation must be made at least 2 hours before the scheduled appointment time.");
+            }
+        }
+
+
+        return await _appointment.Delete(id);   
     }
 
     protected Days GetDay(DayOfWeek day)
