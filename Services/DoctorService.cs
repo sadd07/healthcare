@@ -81,7 +81,6 @@ public class DoctorService : IDoctorService
             {
                 timeSlots.Add(_time.ToString("HH:mm"));
                 _time = _time.AddMinutes(data.Slot);
-                Console.WriteLine(_time);
             } while (_time <= _end);
         }
         

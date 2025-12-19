@@ -68,10 +68,6 @@ public class AppointmentService : IAppointmentService
             foreach (var appointment in appointments)
             {
                 var _end = appointment.Start.AddMinutes(appointment.Duration);
-                Console.WriteLine(appointment.Start);
-                Console.WriteLine(data.Start);
-                Console.WriteLine(_end);
-                Console.WriteLine(end);
                 if ((data.Start >= appointment.Start && data.Start < _end)
                     || (end > appointment.Start && end < _end))
                 {
